@@ -1,0 +1,8 @@
+{
+  "required_email": "user@company.com",
+  "company_name": "Default Company",
+  "max_activations": 4,
+  "license_duration_days": 365,
+  "project": "MostaGare",
+  "notes": "Configuration par défaut - modifiez selon vos besoins"
+}

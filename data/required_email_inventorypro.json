@@ -1,0 +1,10 @@
+{
+  "required_email": "user@inventorypro.com",
+  "company_name": "Inventory Solutions Ltd",
+  "max_activations": 2,
+  "license_duration_days": 180,
+  "project": "InventoryPro",
+  "description": "Gestion avancée des stocks et inventaire",
+  "created_at": "2025-08-10T09:38:53.989185",
+  "updated_at": "2025-08-10T09:38:53.989188"
+}

@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MostaGare - Serveur de Licences</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gradient-to-br from-blue-900 via-blue-800 to-purple-900 min-h-screen">
+    <!-- Header -->
+    <header class="bg-white/10 backdrop-blur-sm border-b border-white/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-6">
+                <div class="flex items-center">
+                    <div class="bg-white w-12 h-12 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fas fa-shield-alt text-blue-600 text-xl"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h1 class="text-2xl font-bold text-white">MostaGare</h1>
+                        <p class="text-blue-200 text-sm">Serveur de Licences & Activation</p>
+                    </div>
+                </div>
+                <button onclick="showAdminLogin()" class="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-lg transition-colors">
+                    <i class="fas fa-cog mr-2"></i>Administration
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <!-- Hero Section -->
+        <div class="text-center mb-16">
+            <h2 class="text-4xl md:text-6xl font-bold text-white mb-6">
+                Système d'Activation
+                <span class="text-blue-300">Sécurisé</span>
+            </h2>
+            <p class="text-xl text-blue-100 mb-8 max-w-3xl mx-auto">
+                Plateforme centralisée pour l'activation et la gestion des licences logicielles.
+                Demandez votre code d'activation instantanément.
+            </p>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
+            <!-- Left: Activation Request Form -->
+            <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                <div class="text-center mb-8">
+                    <div class="bg-green-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-key text-white text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Demande de Code d'Activation</h3>
+                    <p class="text-blue-200">Saisissez votre email pour recevoir votre code d'activation</p>
+                </div>
+
+                <!-- Success/Error Messages for Activation Request -->
+                <div id="requestMessage" class="hidden mb-6"></div>
+
+                <form id="activationRequestForm" class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">
+                            <i class="fas fa-envelope mr-2"></i>Adresse Email
+                        </label>
+                        <input type="email" id="requestEmail" name="email" required 
+                               placeholder="votre@email.com"
+                               class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">
+                            <i class="fas fa-project-diagram mr-2"></i>Projet / Logiciel
+                        </label>
+                        <select id="requestProject" name="project" required
+                                class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                            <option value="" class="text-gray-800">Sélectionnez votre logiciel...</option>
+                            <option value="MostaGare" class="text-gray-800">MostaGare - Gestion Transport</option>
+                            <option value="CRMExpert" class="text-gray-800">CRMExpert - Solution CRM</option>
+                            <option value="InventoryPro" class="text-gray-800">InventoryPro - Gestion Stocks</option>
+                            <option value="AccountingPlus" class="text-gray-800">AccountingPlus - Comptabilité</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">
+                            <i class="fas fa-building mr-2"></i>Entreprise
+                        </label>
+                        <input type="text" id="requestCompany" name="company" required 
+                               placeholder="Nom de votre entreprise"
+                               class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-blue-100 mb-2">
+                            <i class="fas fa-comment mr-2"></i>Message (optionnel)
+                        </label>
+                        <textarea id="requestMessage" name="message" rows="3" 
+                                  placeholder="Informations complémentaires..."
+                                  class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent resize-none"></textarea>
+                    </div>
+
+                    <button type="submit" 
+                            class="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-4 px-6 rounded-lg hover:from-green-600 hover:to-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-transparent transition-all duration-200 font-medium">
+                        <i class="fas fa-paper-plane mr-2"></i>Demander un Code d'Activation
+                    </button>
+                </form>
+
+                <div class="mt-6 text-center text-sm text-blue-200">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Votre demande sera traitée dans les plus brefs délais
+                </div>
+            </div>
+
+            <!-- Right: Information & Features -->
+            <div class="space-y-8">
+                <!-- Features -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                    <h3 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-star mr-3 text-yellow-400"></i>Fonctionnalités
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-shield-alt text-green-400 mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="text-white font-semibold">Sécurité Avancée</h4>
+                                <p class="text-blue-200 text-sm">Chiffrement RSA et vérification par signature cryptographique</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-bolt text-yellow-400 mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="text-white font-semibold">Activation Instantanée</h4>
+                                <p class="text-blue-200 text-sm">Téléchargement et activation automatique des licences</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-desktop text-blue-400 mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="text-white font-semibold">Multi-Postes</h4>
+                                <p class="text-blue-200 text-sm">Gestion flexible du nombre d'activations par licence</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <i class="fas fa-chart-line text-purple-400 mt-1 mr-4"></i>
+                            <div>
+                                <h4 class="text-white font-semibold">Suivi en Temps Réel</h4>
+                                <p class="text-blue-200 text-sm">Monitoring complet des activations et statistiques</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Software List -->
+                <div class="bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
+                    <h3 class="text-2xl font-bold text-white mb-6">
+                        <i class="fas fa-th-large mr-3 text-blue-400"></i>Logiciels Supportés
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <i class="fas fa-truck text-blue-400 text-xl mb-2"></i>
+                            <h4 class="text-white font-semibold">MostaGare</h4>
+                            <p class="text-blue-200 text-sm">Gestion Transport</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <i class="fas fa-users text-green-400 text-xl mb-2"></i>
+                            <h4 class="text-white font-semibold">CRMExpert</h4>
+                            <p class="text-blue-200 text-sm">Solution CRM</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <i class="fas fa-boxes text-orange-400 text-xl mb-2"></i>
+                            <h4 class="text-white font-semibold">InventoryPro</h4>
+                            <p class="text-blue-200 text-sm">Gestion Stocks</p>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4">
+                            <i class="fas fa-calculator text-purple-400 text-xl mb-2"></i>
+                            <h4 class="text-white font-semibold">AccountingPlus</h4>
+                            <p class="text-blue-200 text-sm">Comptabilité</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-8">
+                <div class="bg-blue-500 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-shield-alt text-white text-2xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900">Administration</h3>
+                <p class="text-gray-600 mt-2">Connexion sécurisée</p>
+            </div>
+
+            <!-- Error Message for Admin Login -->
+            {% if error %}
+            <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                    <p class="text-red-700">{{ error }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Admin Login Form -->
+            <form method="POST" action="/login" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-user mr-2"></i>Nom d'utilisateur
+                    </label>
+                    <input type="text" name="username" id="username" required
+                           value="{{ username if username else '' }}"
+                           class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700 mb-2">
+                        <i class="fas fa-lock mr-2"></i>Mot de passe
+                    </label>
+                    <input type="password" name="password" id="password" required
+                           class="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                </div>
+
+                <div class="flex space-x-3">
+                    <button type="button" onclick="hideAdminLogin()"
+                            class="flex-1 bg-gray-200 text-gray-800 py-3 px-4 rounded-lg hover:bg-gray-300 transition-colors">
+                        Annuler
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Connexion
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white/10 backdrop-blur-sm border-t border-white/20 mt-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="text-center">
+                <p class="text-blue-100">MostaGare License Server v4.0 - © 2025 AMIA</p>
+                <p class="text-blue-300 text-sm mt-2">Système sécurisé d'activation de licences logicielles</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Admin Modal Functions
+        function showAdminLogin() {
+            document.getElementById('adminModal').classList.remove('hidden');
+        }
+
+        function hideAdminLogin() {
+            document.getElementById('adminModal').classList.add('hidden');
+        }
+
+        // Close modal on outside click
+        document.getElementById('adminModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                hideAdminLogin();
+            }
+        });
+
+        // Activation Request Form
+        document.getElementById('activationRequestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const messageDiv = document.getElementById('requestMessage');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Envoi en cours...';
+            submitBtn.disabled = true;
+            
+            try {
+                const response = await fetch('/api/request-activation-code', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    messageDiv.className = 'bg-green-500/20 border border-green-400/50 rounded-lg p-4 mb-6';
+                    messageDiv.innerHTML = `
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-400 mr-2"></i>
+                            <div class="text-green-100">
+                                <p class="font-semibold">Demande envoyée avec succès!</p>
+                                <p class="text-sm">${result.message}</p>
+                            </div>
+                        </div>
+                    `;
+                    this.reset();
+                } else {
+                    throw new Error(result.detail || 'Erreur lors de l\'envoi de la demande');
+                }
+            } catch (error) {
+                messageDiv.className = 'bg-red-500/20 border border-red-400/50 rounded-lg p-4 mb-6';
+                messageDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-400 mr-2"></i>
+                        <p class="text-red-100">${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                messageDiv.classList.remove('hidden');
+                submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Demander un Code d\'Activation';
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Auto-show admin modal if there's an error (server-side redirect)
+        {% if error %}
+        showAdminLogin();
+        {% endif %}
+    </script>
+</body>
+</html>

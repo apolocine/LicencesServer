@@ -1,0 +1,10 @@
+{
+  "required_email": "admin@mostagare.com",
+  "company_name": "MostaGare Solutions",
+  "max_activations": 4,
+  "license_duration_days": 365,
+  "project": "MostaGare",
+  "description": "Système de gestion de transport routier",
+  "created_at": "2025-08-10T09:38:53.989132",
+  "updated_at": "2025-08-10T09:38:53.989180"
+}

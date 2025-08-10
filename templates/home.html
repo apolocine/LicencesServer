@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MostaGare License Server v2.0.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .version {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+            display: inline-block;
+        }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .menu-card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            text-decoration: none;
+            color: inherit;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .menu-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+        
+        .menu-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .menu-desc {
+            color: #718096;
+            line-height: 1.5;
+        }
+        
+        .stats {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        
+        .stats h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #718096;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 40px;
+        }
+        
+        .footer a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 MostaGare License Server</h1>
+            <p>Serveur de licences avancé pour l'écosystème MostaGare</p>
+            <div class="version">v2.0.0 Enhanced Edition</div>
+        </div>
+        
+        <div class="stats">
+            <h2>📊 Statistiques du Serveur</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value">🔥</span>
+                    <div class="stat-label">Serveur Actif</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">✨</span>
+                    <div class="stat-label">Nouvelles Fonctionnalités</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">🛡️</span>
+                    <div class="stat-label">Sécurisé RSA-SHA256</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value">👥</span>
+                    <div class="stat-label">Gestion Multi-Postes</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-grid">
+            {% for item in menu %}
+            <a href="{{ item.url }}" class="menu-card">
+                <span class="menu-icon">{{ item.label.split(' ')[0] }}</span>
+                <div class="menu-title">{{ item.label[2:] }}</div>
+                <div class="menu-desc">
+                    {% if 'licence' in item.label.lower() %}
+                    Demandez une nouvelle licence pour votre projet MostaGare
+                    {% elif 'générées' in item.label.lower() %}
+                    Consultez et gérez toutes les licences émises
+                    {% elif 'règles' in item.label.lower() %}
+                    Configurez les paramètres de délivrance des licences
+                    {% elif 'clés' in item.label.lower() %}
+                    Gérez les clés de chiffrement RSA du serveur
+                    {% elif 'postes' in item.label.lower() %}
+                    Administrez les activations et postes clients
+                    {% elif 'activations' in item.label.lower() %}
+                    Consultez l'historique des activations
+                    {% endif %}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        
+        <div class="footer">
+            <p>
+                <strong>MostaGare License Server v2.0.0</strong> - 
+                Système de licences avancé avec gestion multi-postes
+                <br>
+                <a href="https://github.com/apolocine/MostaGare" target="_blank">📂 GitHub</a> | 
+                <a href="/admin/keys/preview">🔐 Clé Publique</a> | 
+                <a href="/admin/rules/history">📈 Historique</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Animation d'entrée
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.menu-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

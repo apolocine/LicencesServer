@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Codes - Serveur de Licences</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm border-b">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/dashboard" class="flex items-center">
+                        <div class="bg-blue-500 w-10 h-10 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-shield-alt text-white text-lg"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h1 class="text-xl font-semibold text-gray-900">Codes d'Activation</h1>
+                            <p class="text-sm text-gray-500">Génération et gestion des codes</p>
+                        </div>
+                    </a>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="text-sm text-gray-700">
+                        <i class="fas fa-user mr-1"></i>{{ user.username }}
+                    </div>
+                    <a href="/logout" class="text-gray-500 hover:text-gray-700">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Header avec bouton de génération -->
+        <div class="flex justify-between items-center mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-gray-900">Codes d'Activation</h2>
+                <p class="text-gray-600">Générez et gérez les codes d'activation pour vos licences</p>
+            </div>
+            <button onclick="openGenerateModal()" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center">
+                <i class="fas fa-plus mr-2"></i>Générer Code
+            </button>
+        </div>
+
+        <!-- Statistiques rapides -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center">
+                    <i class="fas fa-key text-blue-500 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-600">Total Codes</p>
+                        <p class="text-xl font-bold">{{ codes|length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-green-500 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-600">Utilisés</p>
+                        <p class="text-xl font-bold">{{ codes.values() | selectattr('used', 'equalto', True) | list | length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center">
+                    <i class="fas fa-clock text-orange-500 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-600">Actifs</p>
+                        <p class="text-xl font-bold">{{ codes.values() | selectattr('used', 'equalto', False) | list | length }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-triangle text-red-500 text-2xl mr-3"></i>
+                    <div>
+                        <p class="text-sm text-gray-600">Expirés</p>
+                        <p class="text-xl font-bold">{{ expired_count if expired_count else 0 }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        {% if message %}
+        <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                <p class="text-green-700">{{ message }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if error %}
+        <div class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div class="flex items-center">
+                <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                <p class="text-red-700">{{ error }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Filtres -->
+        <div class="bg-white p-4 rounded-lg shadow mb-6">
+            <div class="flex flex-wrap gap-4 items-center">
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Projet:</label>
+                    <select id="filterProject" onchange="filterCodes()" class="border border-gray-300 rounded px-3 py-1">
+                        <option value="">Tous</option>
+                        {% for project in projects.keys() %}
+                        <option value="{{ project }}">{{ project }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Statut:</label>
+                    <select id="filterStatus" onchange="filterCodes()" class="border border-gray-300 rounded px-3 py-1">
+                        <option value="">Tous</option>
+                        <option value="unused">Non utilisés</option>
+                        <option value="used">Utilisés</option>
+                        <option value="expired">Expirés</option>
+                    </select>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <label class="text-sm font-medium text-gray-700">Recherche:</label>
+                    <input type="text" id="searchCode" onkeyup="filterCodes()" 
+                           class="border border-gray-300 rounded px-3 py-1" placeholder="Code ou email...">
+                </div>
+            </div>
+        </div>
+
+        <!-- Table des codes -->
+        <div class="bg-white shadow rounded-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Projet</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Activations</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expire</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="codesTableBody">
+                    {% for code, info in codes.items() %}
+                    <tr class="code-row" data-project="{{ info.project if info.project else 'N/A' }}" 
+                        data-status="{% if info.used %}used{% else %}unused{% endif %}"
+                        data-search="{{ code.lower() }} {{ info.email.lower() if info.email else '' }}">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-mono font-medium text-gray-900">{{ code }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                         {% if info.project == 'MostaGare' %}bg-blue-100 text-blue-800{% else %}bg-purple-100 text-purple-800{% endif %}">
+                                {{ info.project if info.project else 'N/A' }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {{ info.email if info.email else 'N/A' }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            <div class="flex items-center">
+                                <span class="mr-2">{{ info.used_count if info.used_count else 0 }} / {{ info.max_activations if info.max_activations else 'N/A' }}</span>
+                                <div class="w-16 bg-gray-200 rounded-full h-2">
+                                    {% set usage_percent = ((info.used_count or 0) / (info.max_activations or 1) * 100) %}
+                                    <div class="bg-{% if usage_percent >= 100 %}red{% elif usage_percent >= 75 %}orange{% else %}green{% endif %}-500 h-2 rounded-full" 
+                                         style="width: {{ usage_percent }}%"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if info.used %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-check-circle mr-1"></i>Utilisé
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <i class="fas fa-clock mr-1"></i>Disponible
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {% if info.expires_at %}
+                                {{ info.expires_at[:10] }}
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button onclick="copyCode('{{ code }}')" class="text-blue-600 hover:text-blue-900 mr-3" title="Copier">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                            {% if not info.used %}
+                            <button onclick="deleteCode('{{ code }}')" class="text-red-600 hover:text-red-900" title="Supprimer">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal de génération de code -->
+    <div id="generateModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
+        <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-lg bg-white">
+            <div class="mt-3">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-lg font-semibold text-gray-900">Générer un Code d'Activation</h3>
+                    <button onclick="closeGenerateModal()" class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <form method="POST" action="/api/admin/generate-code" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Projet</label>
+                        <select name="project" required class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            {% for project_name, project in projects.items() %}
+                            <option value="{{ project_name }}">{{ project_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" name="email" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="client@example.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nombre d'activations</label>
+                        <input type="number" name="max_activations" min="1" max="10" value="4" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Durée (jours)</label>
+                        <input type="number" name="duration_days" min="1" value="365" required
+                               class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button type="button" onclick="closeGenerateModal()" 
+                                class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50">
+                            Annuler
+                        </button>
+                        <button type="submit" 
+                                class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600">
+                            <i class="fas fa-plus mr-2"></i>Générer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openGenerateModal() {
+            document.getElementById('generateModal').classList.remove('hidden');
+        }
+
+        function closeGenerateModal() {
+            document.getElementById('generateModal').classList.add('hidden');
+        }
+
+        function copyCode(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                // Simple notification
+                const notification = document.createElement('div');
+                notification.textContent = 'Code copié!';
+                notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow z-50';
+                document.body.appendChild(notification);
+                setTimeout(() => notification.remove(), 2000);
+            });
+        }
+
+        function deleteCode(code) {
+            if (confirm(`Êtes-vous sûr de vouloir supprimer le code "${code}" ?`)) {
+                window.location.href = `/admin/codes/delete/${code}`;
+            }
+        }
+
+        function filterCodes() {
+            const projectFilter = document.getElementById('filterProject').value.toLowerCase();
+            const statusFilter = document.getElementById('filterStatus').value;
+            const searchFilter = document.getElementById('searchCode').value.toLowerCase();
+            
+            const rows = document.querySelectorAll('.code-row');
+            
+            rows.forEach(row => {
+                const project = row.dataset.project.toLowerCase();
+                const status = row.dataset.status;
+                const searchText = row.dataset.search;
+                
+                let show = true;
+                
+                if (projectFilter && !project.includes(projectFilter)) show = false;
+                if (statusFilter && status !== statusFilter) show = false;
+                if (searchFilter && !searchText.includes(searchFilter)) show = false;
+                
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        // Fermer modal avec Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeGenerateModal();
+            }
+        });
+    </script>
+</body>
+</html>

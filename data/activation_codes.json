@@ -1,0 +1,98 @@
+{
+  "0581-2D5B-89EF-085F": {
+    "email": "admin@mostagare.com",
+    "max_activations": 4,
+    "created_at": "2025-08-10T09:38:53.990855",
+    "expires_at": "2026-08-10T09:38:53.990867",
+    "used": false,
+    "project": "MostaGare",
+    "description": "Code de d\u00e9monstration pour MostaGare"
+  },
+  "5710-76EB-E432-C3AD": {
+    "email": "admin@mostagare.com",
+    "max_activations": 4,
+    "created_at": "2025-08-10T09:38:53.990941",
+    "expires_at": "2026-08-10T09:38:53.990947",
+    "used": false,
+    "project": "MostaGare",
+    "description": "Code de d\u00e9monstration pour MostaGare"
+  },
+  "491A-DD9A-F997-21B9": {
+    "email": "user@inventorypro.com",
+    "max_activations": 2,
+    "created_at": "2025-08-10T09:38:53.991009",
+    "expires_at": "2026-02-06T09:38:53.991014",
+    "used": false,
+    "project": "InventoryPro",
+    "description": "Code de d\u00e9monstration pour InventoryPro"
+  },
+  "0765-608C-E534-02DE": {
+    "email": "user@inventorypro.com",
+    "max_activations": 2,
+    "created_at": "2025-08-10T09:38:53.991103",
+    "expires_at": "2026-02-06T09:38:53.991108",
+    "used": false,
+    "project": "InventoryPro",
+    "description": "Code de d\u00e9monstration pour InventoryPro"
+  },
+  "623F-C815-612C-91B8": {
+    "email": "contact@crmexpert.fr",
+    "max_activations": 10,
+    "created_at": "2025-08-10T09:38:53.991157",
+    "expires_at": "2027-08-10T09:38:53.991161",
+    "used": false,
+    "project": "CRMExpert",
+    "description": "Code de d\u00e9monstration pour CRMExpert"
+  },
+  "D3DA-0DEA-E961-FBC1": {
+    "email": "contact@crmexpert.fr",
+    "max_activations": 10,
+    "created_at": "2025-08-10T09:38:53.991207",
+    "expires_at": "2027-08-10T09:38:53.991211",
+    "used": false,
+    "project": "CRMExpert",
+    "description": "Code de d\u00e9monstration pour CRMExpert"
+  },
+  "ACD3-642E-36D4-0CAE": {
+    "email": "admin@accountingplus.com",
+    "max_activations": 5,
+    "created_at": "2025-08-10T09:38:53.991257",
+    "expires_at": "2026-08-10T09:38:53.991261",
+    "used": false,
+    "project": "AccountingPlus",
+    "description": "Code de d\u00e9monstration pour AccountingPlus"
+  },
+  "BB93-7D3B-3B95-8450": {
+    "email": "admin@accountingplus.com",
+    "max_activations": 5,
+    "created_at": "2025-08-10T09:38:53.991306",
+    "expires_at": "2026-08-10T09:38:53.991311",
+    "used": false,
+    "project": "AccountingPlus",
+    "description": "Code de d\u00e9monstration pour AccountingPlus"
+  },
+  "C801-19D5-3472-2CAB": {
+    "email": "admin@mostagare.com",
+    "project": "MostaGare",
+    "company": "Transport",
+    "message": "",
+    "max_activations": 4,
+    "created_at": "2025-08-10T23:57:24.811371",
+    "expires_at": "2026-08-10T23:57:24.811427",
+    "used": false,
+    "used_count": 0,
+    "auto_generated": true
+  },
+  "44FB-5669-BFDB-0D1F": {
+    "email": "admin@mostagare.com",
+    "project": "MostaGare",
+    "company": "Transport",
+    "message": "",
+    "max_activations": 4,
+    "created_at": "2025-08-11T00:16:25.486649",
+    "expires_at": "2026-08-11T00:16:25.486664",
+    "used": false,
+    "used_count": 0,
+    "auto_generated": true
+  }
+}

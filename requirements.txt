@@ -1,0 +1,8 @@
+python-multipart
+fastapi
+uvicorn
+jinja2
+pydantic
+cryptography
+bcrypt
+jwt

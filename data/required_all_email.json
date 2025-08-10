@@ -1,0 +1,48 @@
+{
+"InventoryPro":{
+  "required_email": "user@inventorypro.com",
+  "password":"hasshed password",
+  "company_name": "Inventory Solutions Ltd",
+  "max_activations": 2,
+  "license_duration_days": 180,
+  "project": "InventoryPro",
+  "description": "Gestion avancée des stocks et inventaire",
+  "created_at": "2025-08-10T09:38:53.989185",
+  "updated_at": "2025-08-10T09:38:53.989188"
+},
+"CRMExpert":
+{
+  "required_email": "contact@crmexpert.fr",
+  "password":"hasshed password",
+  "company_name": "CRM Expert France",
+  "max_activations": 10,
+  "license_duration_days": 730,
+  "project": "CRMExpert",
+  "description": "Solution CRM complète pour entreprises",
+  "created_at": "2025-08-10T09:38:53.989190",
+  "updated_at": "2025-08-10T09:38:53.989192"
+},
+"AccountingPlus":{
+  "required_email": "admin@accountingplus.com",
+  "password":"hasshed password",
+  "company_name": "Accounting Plus Inc",
+  "max_activations": 5,
+  "license_duration_days": 365,
+  "project": "AccountingPlus",
+  "description": "Logiciel de comptabilité professionnelle",
+  "created_at": "2025-08-10T09:38:53.989195",
+  "updated_at": "2025-08-10T09:38:53.989197"
+},
+"MostaGare":{
+  "required_email": "admin@mostagare.com",
+  "password":"hasshed password",
+  "company_name": "MostaGare Solutions",
+  "max_activations": 4,
+  "license_duration_days": 365,
+  "project": "MostaGare",
+  "description": "Système de gestion de transport routier",
+  "created_at": "2025-08-10T09:38:53.989132",
+  "updated_at": "2025-08-10T09:38:53.989180"
+} 
+
+}

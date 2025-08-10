@@ -1,0 +1,10 @@
+{
+  "required_email": "admin@accountingplus.com",
+  "company_name": "Accounting Plus Inc",
+  "max_activations": 5,
+  "license_duration_days": 365,
+  "project": "AccountingPlus",
+  "description": "Logiciel de comptabilité professionnelle",
+  "created_at": "2025-08-10T09:38:53.989195",
+  "updated_at": "2025-08-10T09:38:53.989197"
+}

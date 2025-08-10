@@ -1,0 +1,33 @@
+{
+  "projects": [
+    {
+      "id": "MostaGare",
+      "name": "MostaGare - Système de Gestion des Gares",
+      "version": "1.0.0",
+      "description": "Solution complète pour la gestion des transports"
+    },
+    {
+      "id": "GestiGare",
+      "name": "GestiGare - Gestion Avancée",
+      "version": "2.0.0",
+      "description": "Version avancée avec fonctionnalités étendues"
+    }
+  ],
+  "default_rules": {
+    "license_duration_days": 365,
+    "max_activations": 4,
+    "restrict_same_email": false,
+    "allow_multiple_versions": true
+  },
+  "activation_rules": {
+    "require_device_id": true,
+    "check_expiration": true,
+    "track_ip_address": true,
+    "limit_by_version": false
+  },
+  "security": {
+    "require_api_token": false,
+    "rate_limit_per_ip_per_hour": 100,
+    "log_requests": true
+  }
+}

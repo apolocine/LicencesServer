@@ -1,0 +1,10 @@
+{
+  "required_email": "contact@crmexpert.fr",
+  "company_name": "CRM Expert France",
+  "max_activations": 10,
+  "license_duration_days": 730,
+  "project": "CRMExpert",
+  "description": "Solution CRM complète pour entreprises",
+  "created_at": "2025-08-10T09:38:53.989190",
+  "updated_at": "2025-08-10T09:38:53.989192"
+}
