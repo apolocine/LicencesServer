@@ -691,4 +691,4 @@ Ce projet est sous licence propriétaire. Tous droits réservés.
 **Version :** 4.0.0  
 **Dernière mise à jour :** Août 2025  
 **Auteur :** Équipe MostaGare  
-**Contact :** admin@mostagare.com
+**Contact :** Dr Hamid MADANI <drmdh@msn.com>
