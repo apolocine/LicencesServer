@@ -6,3 +6,4 @@ pydantic
 cryptography
 bcrypt
 jwt
+python-jose[cryptography]
