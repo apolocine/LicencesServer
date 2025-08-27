@@ -223,7 +223,14 @@ async def login_page(request: Request):
     user = get_current_user(request)
     if user:
         return RedirectResponse(url="/dashboard")
-    return templates.TemplateResponse("login.html", {"request": request})
+    
+    # Charger dynamiquement la liste des projets
+    projects = get_all_software_configs()
+    
+    return templates.TemplateResponse("login.html", {
+        "request": request,
+        "projects": projects
+    })
 
 @app.post("/login")
 async def login(request: Request, username: str = Form(...), password: str = Form(...)):
@@ -232,17 +239,21 @@ async def login(request: Request, username: str = Form(...), password: str = For
     user_data = users.get(username)
     
     if not user_data or not user_data.get('active', False):
+        projects = get_all_software_configs()
         return templates.TemplateResponse("login.html", {
             "request": request,
             "error": "Utilisateur non trouvé ou inactif",
-            "username": username
+            "username": username,
+            "projects": projects
         })
     
     if not verify_password(password, user_data.get('password_hash', '')):
+        projects = get_all_software_configs()
         return templates.TemplateResponse("login.html", {
             "request": request,
             "error": "Mot de passe incorrect",
-            "username": username
+            "username": username,
+            "projects": projects
         })
     
     # Mettre à jour la dernière connexion

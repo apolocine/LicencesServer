@@ -437,6 +437,244 @@ async def activate_license(
             detail=f"Erreur interne du serveur: {str(e)}"
         )
 
+@app.get("/api/public-key")
+async def get_public_key():
+    """Télécharger la clé publique pour vérification locale"""
+    try:
+        if not os.path.exists(PUBLIC_KEY_FILE):
+            # Générer les clés si elles n'existent pas
+            from cryptography.hazmat.primitives.asymmetric import rsa
+            from cryptography.hazmat.primitives import serialization
+            
+            private_key = rsa.generate_private_key(
+                public_exponent=65537,
+                key_size=2048
+            )
+            
+            # Sauvegarder la clé privée
+            with open(PRIVATE_KEY_FILE, 'wb') as f:
+                f.write(private_key.private_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PrivateFormat.PKCS8,
+                    encryption_algorithm=serialization.NoEncryption()
+                ))
+            
+            # Sauvegarder la clé publique
+            public_key = private_key.public_key()
+            with open(PUBLIC_KEY_FILE, 'wb') as f:
+                f.write(public_key.public_bytes(
+                    encoding=serialization.Encoding.PEM,
+                    format=serialization.PublicFormat.SubjectPublicKeyInfo
+                ))
+        
+        # Lire et retourner la clé publique
+        with open(PUBLIC_KEY_FILE, 'r') as f:
+            public_key_content = f.read()
+        
+        return {
+            "success": True,
+            "public_key": public_key_content,
+            "algorithm": "RSA-PSS-SHA256"
+        }
+        
+    except Exception as e:
+        logger.error(f"Erreur récupération clé publique: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/verify-license")
+async def verify_license_only(
+    activationCode: str = Form(...),
+    licenseData: str = Form(None)
+):
+    """
+    Vérifier une licence sans l'activer (phase de pré-activation)
+    """
+    try:
+        # Valider le format du code d'activation
+        if not activationCode or len(activationCode) != 19:
+            raise HTTPException(
+                status_code=400,
+                detail="Code d'activation invalide"
+            )
+        
+        # Charger les codes d'activation
+        activation_codes = load_activation_codes()
+        
+        if activationCode not in activation_codes:
+            raise HTTPException(
+                status_code=404,
+                detail="Code d'activation non trouvé"
+            )
+        
+        code_info = activation_codes[activationCode]
+        
+        # Vérifier l'expiration du code
+        if 'expires_at' in code_info:
+            expires_at = datetime.fromisoformat(code_info['expires_at'])
+            if datetime.now() > expires_at:
+                raise HTTPException(
+                    status_code=403,
+                    detail="Code d'activation expiré"
+                )
+        
+        # Vérifier si le code a déjà été utilisé au maximum
+        activations = load_activations()
+        active_activations = [
+            a for a in activations 
+            if a.get('activation_code') == activationCode and a.get('status') == 'active'
+        ]
+        
+        max_activations = code_info.get('max_activations', 4)
+        activations_remaining = max_activations - len(active_activations)
+        
+        # Si des données de licence sont fournies, vérifier la signature
+        if licenseData:
+            try:
+                license_json = json.loads(licenseData)
+                if not verify_license_signature(license_json):
+                    raise HTTPException(
+                        status_code=400,
+                        detail="Signature de licence invalide"
+                    )
+            except json.JSONDecodeError:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Données de licence JSON invalides"
+                )
+        
+        # Retourner les informations de vérification sans activer
+        return {
+            "success": True,
+            "verified": True,
+            "code_info": {
+                "email": code_info.get('email'),
+                "project": code_info.get('project', 'MostaGare'),
+                "expires_at": code_info.get('expires_at'),
+                "max_activations": max_activations,
+                "activations_used": len(active_activations),
+                "activations_remaining": activations_remaining,
+                "already_used": code_info.get('used', False)
+            },
+            "message": "Licence vérifiée avec succès. Prête pour activation."
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur vérification licence: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.post("/api/start-license")
+async def start_license_counting(
+    request: Request,
+    activationCode: str = Form(...),
+    licenseData: str = Form(...),
+    machineId: str = Form(None)
+):
+    """
+    Démarrer le comptage de la licence (activation définitive)
+    """
+    try:
+        # Valider le format du code
+        if not activationCode or len(activationCode) != 19:
+            raise HTTPException(
+                status_code=400,
+                detail="Code d'activation invalide"
+            )
+        
+        # Parser les données de licence
+        try:
+            license_json = json.loads(licenseData)
+        except json.JSONDecodeError:
+            raise HTTPException(
+                status_code=400,
+                detail="Données de licence JSON invalides"
+            )
+        
+        # Vérifier la signature
+        if not verify_license_signature(license_json):
+            raise HTTPException(
+                status_code=400,
+                detail="Signature de licence invalide"
+            )
+        
+        # Charger et vérifier le code d'activation
+        activation_codes = load_activation_codes()
+        
+        if activationCode not in activation_codes:
+            raise HTTPException(
+                status_code=404,
+                detail="Code d'activation non trouvé"
+            )
+        
+        code_info = activation_codes[activationCode]
+        
+        # Vérifier le nombre d'activations
+        activations = load_activations()
+        active_activations = [
+            a for a in activations 
+            if a.get('activation_code') == activationCode and a.get('status') == 'active'
+        ]
+        
+        max_activations = code_info.get('max_activations', 4)
+        
+        if len(active_activations) >= max_activations:
+            raise HTTPException(
+                status_code=403,
+                detail=f"Nombre maximum d'activations atteint ({max_activations})"
+            )
+        
+        # Obtenir l'ID machine
+        if not machineId:
+            machineId = get_machine_id_from_request(request)
+        
+        # Créer l'activation avec timestamp de début
+        activation_data = {
+            'activation_code': activationCode,
+            'machine_id': machineId,
+            'email': license_json.get('data', {}).get('email', code_info.get('email')),
+            'license_data': license_json,
+            'status': 'active',
+            'client_ip': request.client.host,
+            'user_agent': request.headers.get('User-Agent', ''),
+            'started_at': datetime.now().isoformat(),  # Date de début du comptage
+            'activation_type': 'deferred'  # Marquer comme activation différée
+        }
+        
+        # Sauvegarder l'activation
+        save_activation(activation_data)
+        
+        # Marquer le code comme utilisé si c'est la première utilisation
+        if not code_info.get('used', False):
+            activation_codes[activationCode]['used'] = True
+            activation_codes[activationCode]['first_used_at'] = datetime.now().isoformat()
+        
+        # Mettre à jour la date de début de comptage
+        activation_codes[activationCode]['counting_started_at'] = datetime.now().isoformat()
+        save_activation_codes(activation_codes)
+        
+        # Calculer les jours restants depuis MAINTENANT
+        license_duration = code_info.get('license_duration_days', 365)
+        expires_at = (datetime.now() + timedelta(days=license_duration)).isoformat()
+        
+        return {
+            "success": True,
+            "message": "Licence activée avec succès. Le comptage a commencé.",
+            "activation_info": {
+                "started_at": activation_data['started_at'],
+                "expires_at": expires_at,
+                "remaining_days": license_duration,
+                "activations_used": len(active_activations) + 1,
+                "max_activations": max_activations
+            }
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Erreur démarrage licence: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/activations")
 async def get_activations():
     """Obtenir la liste des activations (pour admin)"""

@@ -74,10 +74,17 @@
                         <select id="requestProject" name="project" required
                                 class="w-full px-4 py-3 bg-white/10 border border-white/30 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent">
                             <option value="" class="text-gray-800">Sélectionnez votre logiciel...</option>
+                            {% if projects %}
+                            {% for project_key, project_data in projects.items() %}
+                            <option value="{{ project_key }}" class="text-gray-800">{{ project_key }} - {{ project_data.description or project_data.company_name }}</option>
+                            {% endfor %}
+                            {% else %}
+                            <!-- Fallback en cas d'erreur de chargement des projets -->
                             <option value="MostaGare" class="text-gray-800">MostaGare - Gestion Transport</option>
                             <option value="CRMExpert" class="text-gray-800">CRMExpert - Solution CRM</option>
                             <option value="InventoryPro" class="text-gray-800">InventoryPro - Gestion Stocks</option>
                             <option value="AccountingPlus" class="text-gray-800">AccountingPlus - Comptabilité</option>
+                            {% endif %}
                         </select>
                     </div>
 
@@ -156,6 +163,26 @@
                         <i class="fas fa-th-large mr-3 text-blue-400"></i>Logiciels Supportés
                     </h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        {% if projects %}
+                        {% for project_key, project_data in projects.items() %}
+                        <div class="bg-white/10 rounded-lg p-4">
+                            {% if project_key == 'MostaGare' or 'MostaGare' in project_key %}
+                                <i class="fas fa-truck text-blue-400 text-xl mb-2"></i>
+                            {% elif 'CRM' in project_key %}
+                                <i class="fas fa-users text-green-400 text-xl mb-2"></i>
+                            {% elif 'Inventory' in project_key %}
+                                <i class="fas fa-boxes text-orange-400 text-xl mb-2"></i>
+                            {% elif 'Accounting' in project_key %}
+                                <i class="fas fa-calculator text-purple-400 text-xl mb-2"></i>
+                            {% else %}
+                                <i class="fas fa-cog text-gray-400 text-xl mb-2"></i>
+                            {% endif %}
+                            <h4 class="text-white font-semibold">{{ project_key }}</h4>
+                            <p class="text-blue-200 text-sm">{{ project_data.description[:50] + '...' if project_data.description and project_data.description|length > 50 else project_data.description or project_data.company_name }}</p>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <!-- Fallback statique -->
                         <div class="bg-white/10 rounded-lg p-4">
                             <i class="fas fa-truck text-blue-400 text-xl mb-2"></i>
                             <h4 class="text-white font-semibold">MostaGare</h4>
@@ -176,6 +203,7 @@
                             <h4 class="text-white font-semibold">AccountingPlus</h4>
                             <p class="text-blue-200 text-sm">Comptabilité</p>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
